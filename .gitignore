@@ -17,3 +17,6 @@ __pycache__/
 
 .DS_Store
 Thumbs.db
+minimal_nb_quartz.sh
+quartz-min/
+.idea
