@@ -1,0 +1,92 @@
+== Physical Plan ==
+AdaptiveSparkPlan (15)
++- Project (14)
+   +- SortMergeJoin LeftOuter (13)
+      :- Sort (4)
+      :  +- Exchange (3)
+      :     +- Project (2)
+      :        +- Scan csv  (1)
+      +- Sort (12)
+         +- Exchange (11)
+            +- HashAggregate (10)
+               +- Exchange (9)
+                  +- HashAggregate (8)
+                     +- Project (7)
+                        +- Filter (6)
+                           +- Scan parquet  (5)
+
+
+(1) Scan csv 
+Output [6]: [Timestamp#30, Open#31, High#32, Low#33, Close#34, Volume#35]
+Batched: false
+Location: InMemoryFileIndex [file:/home/owenb/big_data/Project_Big_Data_Analytics/data/prices/btcusd_1-min_data.csv]
+ReadSchema: struct<Timestamp:double,Open:double,High:double,Low:double,Close:double,Volume:double>
+
+(2) Project
+Output [7]: [Timestamp#30 AS unix_timestamp#37, Open#31 AS price_open#38, High#32 AS price_high#39, Low#33 AS price_low#40, Close#34 AS price_close#41, Volume#35 AS volume_btc#42, cast(from_unixtime(cast(Timestamp#30 as bigint), yyyy-MM-dd HH:mm:ss, Some(Europe/Paris)) as timestamp) AS timestamp_utc#43]
+Input [6]: [Timestamp#30, Open#31, High#32, Low#33, Close#34, Volume#35]
+
+(3) Exchange
+Input [7]: [unix_timestamp#37, price_open#38, price_high#39, price_low#40, price_close#41, volume_btc#42, timestamp_utc#43]
+Arguments: hashpartitioning(timestamp_utc#43, 200), ENSURE_REQUIREMENTS, [plan_id=367]
+
+(4) Sort
+Input [7]: [unix_timestamp#37, price_open#38, price_high#39, price_low#40, price_close#41, volume_btc#42, timestamp_utc#43]
+Arguments: [timestamp_utc#43 ASC NULLS FIRST], false, 0
+
+(5) Scan parquet 
+Output [4]: [n_inputs#62, n_outputs#63, total_amount_btc#65, timestamp_utc#66]
+Batched: true
+Location: InMemoryFileIndex [file:/home/owenb/big_data/Project_Big_Data_Analytics/data/processed/transactions.parquet]
+PushedFilters: [IsNotNull(timestamp_utc)]
+ReadSchema: struct<n_inputs:int,n_outputs:int,total_amount_btc:double,timestamp_utc:timestamp>
+
+(6) Filter
+Input [4]: [n_inputs#62, n_outputs#63, total_amount_btc#65, timestamp_utc#66]
+Condition : (isnotnull(timestamp_utc#66) AND isnotnull(knownnullable(precisetimestampconversion(((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - CASE WHEN (((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) < 0) THEN (((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) + 60000000) ELSE ((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) END) - 0), LongType, TimestampType))))
+
+(7) Project
+Output [4]: [named_struct(start, knownnullable(precisetimestampconversion(((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - CASE WHEN (((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) < 0) THEN (((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) + 60000000) ELSE ((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) END) - 0), LongType, TimestampType)), end, knownnullable(precisetimestampconversion((((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - CASE WHEN (((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) < 0) THEN (((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) + 60000000) ELSE ((precisetimestampconversion(timestamp_utc#66, TimestampType, LongType) - 0) % 60000000) END) - 0) + 60000000), LongType, TimestampType))) AS window#101, n_inputs#62, n_outputs#63, total_amount_btc#65]
+Input [4]: [n_inputs#62, n_outputs#63, total_amount_btc#65, timestamp_utc#66]
+
+(8) HashAggregate
+Input [4]: [window#101, n_inputs#62, n_outputs#63, total_amount_btc#65]
+Keys [1]: [window#101]
+Functions [4]: [partial_count(1), partial_sum(total_amount_btc#65), partial_avg(n_inputs#62), partial_avg(n_outputs#63)]
+Aggregate Attributes [6]: [count#107L, sum#108, sum#109, count#110L, sum#111, count#112L]
+Results [7]: [window#101, count#113L, sum#114, sum#115, count#116L, sum#117, count#118L]
+
+(9) Exchange
+Input [7]: [window#101, count#113L, sum#114, sum#115, count#116L, sum#117, count#118L]
+Arguments: hashpartitioning(window#101, 200), ENSURE_REQUIREMENTS, [plan_id=363]
+
+(10) HashAggregate
+Input [7]: [window#101, count#113L, sum#114, sum#115, count#116L, sum#117, count#118L]
+Keys [1]: [window#101]
+Functions [4]: [count(1), sum(total_amount_btc#65), avg(n_inputs#62), avg(n_outputs#63)]
+Aggregate Attributes [4]: [count(1)#97L, sum(total_amount_btc#65)#98, avg(n_inputs#62)#99, avg(n_outputs#63)#100]
+Results [5]: [count(1)#97L AS tx_count#87L, sum(total_amount_btc#65)#98 AS tx_volume_btc#88, avg(n_inputs#62)#99 AS avg_inputs#89, avg(n_outputs#63)#100 AS avg_outputs#90, window#101.start AS timestamp_utc#140]
+
+(11) Exchange
+Input [5]: [tx_count#87L, tx_volume_btc#88, avg_inputs#89, avg_outputs#90, timestamp_utc#140]
+Arguments: hashpartitioning(timestamp_utc#140, 200), ENSURE_REQUIREMENTS, [plan_id=368]
+
+(12) Sort
+Input [5]: [tx_count#87L, tx_volume_btc#88, avg_inputs#89, avg_outputs#90, timestamp_utc#140]
+Arguments: [timestamp_utc#140 ASC NULLS FIRST], false, 0
+
+(13) SortMergeJoin
+Left keys [1]: [timestamp_utc#43]
+Right keys [1]: [timestamp_utc#140]
+Join type: LeftOuter
+Join condition: None
+
+(14) Project
+Output [11]: [timestamp_utc#43, unix_timestamp#37, price_open#38, price_high#39, price_low#40, price_close#41, volume_btc#42, coalesce(tx_count#87L, 0) AS tx_count#142L, coalesce(nanvl(tx_volume_btc#88, null), 0.0) AS tx_volume_btc#143, coalesce(nanvl(avg_inputs#89, null), 0.0) AS avg_inputs#144, coalesce(nanvl(avg_outputs#90, null), 0.0) AS avg_outputs#145]
+Input [12]: [unix_timestamp#37, price_open#38, price_high#39, price_low#40, price_close#41, volume_btc#42, timestamp_utc#43, tx_count#87L, tx_volume_btc#88, avg_inputs#89, avg_outputs#90, timestamp_utc#140]
+
+(15) AdaptiveSparkPlan
+Output [11]: [timestamp_utc#43, unix_timestamp#37, price_open#38, price_high#39, price_low#40, price_close#41, volume_btc#42, tx_count#142L, tx_volume_btc#143, avg_inputs#144, avg_outputs#145]
+Arguments: isFinalPlan=false
+
+

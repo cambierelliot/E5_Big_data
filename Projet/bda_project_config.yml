@@ -1,0 +1,30 @@
+# ==========================================================
+# Configuration for the BDA Bitcoin Price Predictor Project
+# ==========================================================
+
+# Input/Output Paths 
+paths:
+  env_file: "ENV.md"
+  raw_blocks: "data/blocks/blocks/blk*.dat"
+  market_prices: "data/prices/btcusd_1-min_data.csv"
+  
+  # Processed data (intermediate steps)
+  transactions_parquet: "data/processed/transactions.parquet"
+  features_parquet: "data/processed/features.parquet"
+  
+  # Final outputs
+  metrics_log: "project_metrics_log.csv"
+
+# Model Parameters 
+modeling:
+  # Label definition
+  prediction_horizon_minutes: 10
+  price_increase_threshold: 0.001
+
+  # Feature engineering
+  rolling_window_hours: 1
+
+  # Model training
+  test_size: 0.2
+  random_seed: 42
+  run_id: "gbt_with_rolling_features_run_01"

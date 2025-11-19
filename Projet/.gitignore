@@ -1,0 +1,28 @@
+# Data files
+btc_blocks_pruned_1GiB.tar.gz
+data/blocks/
+data/prices/
+data/processed/
+
+# local settings
+.vscode/
+bda_project_config.yml.local
+
+# Environnements Python / Conda
+bda-env/
+.env
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Files created
+*.csv
+*.log
+
+node_modules/

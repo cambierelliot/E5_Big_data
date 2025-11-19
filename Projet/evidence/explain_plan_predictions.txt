@@ -1,0 +1,81 @@
+== Physical Plan ==
+AdaptiveSparkPlan (15)
++- Project (14)
+   +- Project (13)
+      +- Project (12)
+         +- Sample (11)
+            +- Sort (10)
+               +- Project (9)
+                  +- Filter (8)
+                     +- Window (7)
+                        +- Project (6)
+                           +- Filter (5)
+                              +- Window (4)
+                                 +- Sort (3)
+                                    +- Exchange (2)
+                                       +- Scan parquet  (1)
+
+
+(1) Scan parquet 
+Output [11]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201]
+Batched: true
+Location: InMemoryFileIndex [file:/home/owenb/big_data/Project_Big_Data_Analytics/data/processed/features.parquet]
+ReadSchema: struct<timestamp_utc:timestamp,unix_timestamp:double,price_open:double,price_high:double,price_low:double,price_close:double,volume_btc:double,tx_count:bigint,tx_volume_btc:double,avg_inputs:double,avg_outputs:double>
+
+(2) Exchange
+Input [11]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201]
+Arguments: SinglePartition, ENSURE_REQUIREMENTS, [plan_id=1695]
+
+(3) Sort
+Input [11]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201]
+Arguments: [timestamp_utc#191 ASC NULLS FIRST], false, 0
+
+(4) Window
+Input [11]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201]
+Arguments: [lead(price_close#196, 10, null) windowspecdefinition(timestamp_utc#191 ASC NULLS FIRST, specifiedwindowframe(RowFrame, 10, 10)) AS future_price#237], [timestamp_utc#191 ASC NULLS FIRST]
+
+(5) Filter
+Input [12]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237]
+Condition : atleastnnonnulls(1, future_price#237)
+
+(6) Project
+Output [13]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, CASE WHEN (future_price#237 > (price_close#196 * 1.001)) THEN 1 ELSE 0 END AS label#238]
+Input [12]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237]
+
+(7) Window
+Input [13]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238]
+Arguments: [avg(price_close#196) windowspecdefinition(timestamp_utc#191 ASC NULLS FIRST, specifiedwindowframe(RowFrame, -60, currentrow$())) AS price_1h_avg#279, avg(tx_volume_btc#199) windowspecdefinition(timestamp_utc#191 ASC NULLS FIRST, specifiedwindowframe(RowFrame, -60, currentrow$())) AS tx_volume_btc_1h_avg#282, max(tx_count#198L) windowspecdefinition(timestamp_utc#191 ASC NULLS FIRST, specifiedwindowframe(RowFrame, -60, currentrow$())) AS tx_count_1h_max#284L], [timestamp_utc#191 ASC NULLS FIRST]
+
+(8) Filter
+Input [16]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L]
+Condition : atleastnnonnulls(3, (price_close#196 / price_1h_avg#279), tx_volume_btc_1h_avg#282, tx_count_1h_max#284L)
+
+(9) Project
+Output [17]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, (price_close#196 / price_1h_avg#279) AS price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L]
+Input [16]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L]
+
+(10) Sort
+Input [17]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L]
+Arguments: [timestamp_utc#191 ASC NULLS FIRST, unix_timestamp#192 ASC NULLS FIRST, price_open#193 ASC NULLS FIRST, price_high#194 ASC NULLS FIRST, price_low#195 ASC NULLS FIRST, price_close#196 ASC NULLS FIRST, volume_btc#197 ASC NULLS FIRST, tx_count#198L ASC NULLS FIRST, tx_volume_btc#199 ASC NULLS FIRST, avg_inputs#200 ASC NULLS FIRST, avg_outputs#201 ASC NULLS FIRST, future_price#237 ASC NULLS FIRST, label#238 ASC NULLS FIRST, price_1h_avg#279 ASC NULLS FIRST, price_momentum#281 ASC NULLS FIRST, tx_volume_btc_1h_avg#282 ASC NULLS FIRST, tx_count_1h_max#284L ASC NULLS FIRST], false, 0
+
+(11) Sample
+Input [17]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L]
+Arguments: 0.8, 1.0, false, 42
+
+(12) Project
+Output [18]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L, UDF(struct(price_close, price_close#196, tx_count_double_VectorAssembler_9044b81933a9, cast(tx_count#198L as double), tx_volume_btc, tx_volume_btc#199, price_momentum, price_momentum#281, tx_volume_btc_1h_avg, tx_volume_btc_1h_avg#282, tx_count_1h_max_double_VectorAssembler_9044b81933a9, cast(tx_count_1h_max#284L as double))) AS features#460]
+Input [17]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L]
+
+(13) Project
+Output [19]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L, features#460, UDF(features#460) AS rawPrediction#463]
+Input [18]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L, features#460]
+
+(14) Project
+Output [21]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L, features#460, rawPrediction#463, UDF(rawPrediction#463) AS probability#467, UDF(rawPrediction#463) AS prediction#474]
+Input [19]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L, features#460, rawPrediction#463]
+
+(15) AdaptiveSparkPlan
+Output [21]: [timestamp_utc#191, unix_timestamp#192, price_open#193, price_high#194, price_low#195, price_close#196, volume_btc#197, tx_count#198L, tx_volume_btc#199, avg_inputs#200, avg_outputs#201, future_price#237, label#238, price_1h_avg#279, price_momentum#281, tx_volume_btc_1h_avg#282, tx_count_1h_max#284L, features#460, rawPrediction#463, probability#467, prediction#474]
+Arguments: isFinalPlan=false
+
+
