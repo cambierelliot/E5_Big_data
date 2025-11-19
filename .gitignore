@@ -1,0 +1,19 @@
+
+data/
+*.zip
+*.gz
+*.bz2
+
+metastore_db/
+derby.log
+spark-warehouse/
+# Logs éventuels
+*.log
+
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+
+.DS_Store
+Thumbs.db

@@ -1,0 +1,4 @@
+run_id,task,note,files_read,input_size_bytes,shuffle_read_bytes,shuffle_write_bytes,timestamp
+r1,perfect_x,baseline,0,0,360,354,2025-11-14T09:33:58
+r2,pmi_pairs,baseline,0,0,2831152,2726298,2025-11-14T09:44:58
+r3,pmi_stripes,baseline,0,0,4613734,4404019,2025-11-14T09:46:34

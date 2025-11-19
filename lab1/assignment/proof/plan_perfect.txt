@@ -1,0 +1,58 @@
+== Physical Plan ==
+AdaptiveSparkPlan (10)
++- == Final Plan ==
+   ResultQueryStage (7)
+   +- * Sort (6)
+      +- AQEShuffleRead (5)
+         +- ShuffleQueryStage (4), Statistics(sizeInBytes=160.0 B, rowCount=5)
+            +- Exchange (3)
+               +- * Filter (2)
+                  +- * Scan ExistingRDD (1)
++- == Initial Plan ==
+   Sort (9)
+   +- Exchange (8)
+      +- Filter (2)
+         +- Scan ExistingRDD (1)
+
+
+(1) Scan ExistingRDD [codegen id : 1]
+Output [2]: [follower#63, count#64L]
+Arguments: [follower#63, count#64L], MapPartitionsRDD[29] at applySchemaToPythonRDD at NativeMethodAccessorImpl.java:0, ExistingRDD, UnknownPartitioning(0)
+
+(2) Filter [codegen id : 1]
+Input [2]: [follower#63, count#64L]
+Condition : (isnotnull(count#64L) AND (count#64L > 1))
+
+(3) Exchange
+Input [2]: [follower#63, count#64L]
+Arguments: rangepartitioning(count#64L DESC NULLS LAST, follower#63 ASC NULLS FIRST, 8), ENSURE_REQUIREMENTS, [plan_id=88]
+
+(4) ShuffleQueryStage
+Output [2]: [follower#63, count#64L]
+Arguments: 0
+
+(5) AQEShuffleRead
+Input [2]: [follower#63, count#64L]
+Arguments: coalesced
+
+(6) Sort [codegen id : 2]
+Input [2]: [follower#63, count#64L]
+Arguments: [count#64L DESC NULLS LAST, follower#63 ASC NULLS FIRST], true, 0
+
+(7) ResultQueryStage
+Output [2]: [follower#63, count#64L]
+Arguments: 1
+
+(8) Exchange
+Input [2]: [follower#63, count#64L]
+Arguments: rangepartitioning(count#64L DESC NULLS LAST, follower#63 ASC NULLS FIRST, 8), ENSURE_REQUIREMENTS, [plan_id=79]
+
+(9) Sort
+Input [2]: [follower#63, count#64L]
+Arguments: [count#64L DESC NULLS LAST, follower#63 ASC NULLS FIRST], true, 0
+
+(10) AdaptiveSparkPlan
+Output [2]: [follower#63, count#64L]
+Arguments: isFinalPlan=true
+
+

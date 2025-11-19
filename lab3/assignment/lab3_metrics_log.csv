@@ -1,0 +1,9 @@
+run_id,task,note,files_read,input_size_bytes,shuffle_read_bytes,shuffle_write_bytes,timestamp
+A1,PR_A,Alpha=0.85- 10 iters - 41.80s,1,188416,1258291,147456,2025-11-18T10:23:43
+A2,PPR_A2,Sources=5 - Alpha=0.85 - 10 iters,1,188416,953139,147661,2025-11-18T10:47:45
+B1,Train_X,SGD Delta=0.002 Epochs=10,1,26738688,15414067,15414067,2025-11-18T11:01:32
+B2,Train_Y,SGD Delta=0.002 Epochs=10,1,20656947,12478054,12478054,2025-11-18T11:05:03
+B3,Train_Britney,SGD Delta=0.002 Epochs=10 (14min),1,805096653,503106765,503106765,2025-11-18T11:19:29
+B4,Predict_X,Model X on Data X - Broadcast,1,26738688,0,0,2025-11-18T11:21:27
+B5,Predict_Britney,Model Britney on Data X,1,26738688,0,0,2025-11-18T11:22:32
+B6,Ensemble_Vote,Combine X+Y on Data X,1,26738688,0,0,2025-11-18T11:23:36

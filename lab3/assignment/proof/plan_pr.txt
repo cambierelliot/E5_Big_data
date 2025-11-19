@@ -1,0 +1,6 @@
+(4) MapPartitionsRDD[5] at mapPartitions at PythonRDD.scala:168 [Memory Serialized 1x Replicated]
+ |  ShuffledRDD[4] at partitionBy at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
+ +-(2) PairwiseRDD[3] at partitionBy at /tmp/ipykernel_452/4185599830.py:22 [Memory Serialized 1x Replicated]
+    |  PythonRDD[2] at partitionBy at /tmp/ipykernel_452/4185599830.py:22 [Memory Serialized 1x Replicated]
+    |  /mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big data/bigdata/lab3/assignment/data/p2p-Gnutella08-adj.txt MapPartitionsRDD[1] at textFile at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]
+    |  /mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big data/bigdata/lab3/assignment/data/p2p-Gnutella08-adj.txt HadoopRDD[0] at textFile at NativeMethodAccessorImpl.java:0 [Memory Serialized 1x Replicated]

@@ -1,0 +1,128 @@
+== Physical Plan ==
+AdaptiveSparkPlan (21)
++- == Final Plan ==
+   ResultQueryStage (14)
+   +- TakeOrderedAndProject (13)
+      +- * HashAggregate (12)
+         +- AQEShuffleRead (11)
+            +- ShuffleQueryStage (10), Statistics(sizeInBytes=376.3 KiB, rowCount=1.15E+4)
+               +- Exchange (9)
+                  +- * HashAggregate (8)
+                     +- Generate (7)
+                        +- * Project (6)
+                           +- TableCacheQueryStage (5), Statistics(sizeInBytes=1206.4 KiB, rowCount=4.00E+4)
+                              +- InMemoryTableScan (1)
+                                    +- InMemoryRelation (2)
+                                          +- * Project (4)
+                                             +- Scan text  (3)
++- == Initial Plan ==
+   TakeOrderedAndProject (20)
+   +- HashAggregate (19)
+      +- Exchange (18)
+         +- HashAggregate (17)
+            +- Generate (16)
+               +- Project (15)
+                  +- InMemoryTableScan (1)
+                        +- InMemoryRelation (2)
+                              +- * Project (4)
+                                 +- Scan text  (3)
+
+
+(1) InMemoryTableScan
+Output [1]: [line#2]
+Arguments: [line#2]
+
+(2) InMemoryRelation
+Arguments: [line#2], StorageLevel(disk, memory, deserialized, 1 replicas)
+
+(3) Scan text 
+Output [1]: [value#0]
+Batched: false
+Location: InMemoryFileIndex [file:/mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big data/bigdata/lab1/practice/data/tiny_shakespeare.txt]
+ReadSchema: struct<value:string>
+
+(4) Project [codegen id : 1]
+Output [1]: [value#0 AS line#2]
+Input [1]: [value#0]
+
+(5) TableCacheQueryStage
+Output [1]: [line#2]
+Arguments: 0
+
+(6) Project [codegen id : 1]
+Output [1]: [split(regexp_replace(lower(line#2), [^a-z]+,  , 1), \s+, -1) AS tokens#196]
+Input [1]: [line#2]
+
+(7) Generate
+Input [1]: [tokens#196]
+Arguments: explode(filter(tokens#196, lambdafunction(NOT (lambda x#198 = ), lambda x#198, false))), false, [token#199]
+
+(8) HashAggregate [codegen id : 2]
+Input [1]: [token#199]
+Keys [1]: [token#199]
+Functions [1]: [partial_count(1)]
+Aggregate Attributes [1]: [count#220L]
+Results [2]: [token#199, count#221L]
+
+(9) Exchange
+Input [2]: [token#199, count#221L]
+Arguments: hashpartitioning(token#199, 200), ENSURE_REQUIREMENTS, [plan_id=643]
+
+(10) ShuffleQueryStage
+Output [2]: [token#199, count#221L]
+Arguments: 1
+
+(11) AQEShuffleRead
+Input [2]: [token#199, count#221L]
+Arguments: coalesced
+
+(12) HashAggregate [codegen id : 3]
+Input [2]: [token#199, count#221L]
+Keys [1]: [token#199]
+Functions [1]: [count(1)]
+Aggregate Attributes [1]: [count(1)#202L]
+Results [2]: [token#199, count(1)#202L AS count#200L]
+
+(13) TakeOrderedAndProject
+Input [2]: [token#199, count#200L]
+Arguments: 10, [count#200L DESC NULLS LAST, token#199 ASC NULLS FIRST], [token#199, count#200L]
+
+(14) ResultQueryStage
+Output [2]: [token#199, count#200L]
+Arguments: 2
+
+(15) Project
+Output [1]: [split(regexp_replace(lower(line#2), [^a-z]+,  , 1), \s+, -1) AS tokens#196]
+Input [1]: [line#2]
+
+(16) Generate
+Input [1]: [tokens#196]
+Arguments: explode(filter(tokens#196, lambdafunction(NOT (lambda x#198 = ), lambda x#198, false))), false, [token#199]
+
+(17) HashAggregate
+Input [1]: [token#199]
+Keys [1]: [token#199]
+Functions [1]: [partial_count(1)]
+Aggregate Attributes [1]: [count#220L]
+Results [2]: [token#199, count#221L]
+
+(18) Exchange
+Input [2]: [token#199, count#221L]
+Arguments: hashpartitioning(token#199, 200), ENSURE_REQUIREMENTS, [plan_id=595]
+
+(19) HashAggregate
+Input [2]: [token#199, count#221L]
+Keys [1]: [token#199]
+Functions [1]: [count(1)]
+Aggregate Attributes [1]: [count(1)#202L]
+Results [2]: [token#199, count(1)#202L AS count#200L]
+
+(20) TakeOrderedAndProject
+Input [2]: [token#199, count#200L]
+Arguments: 10, [count#200L DESC NULLS LAST, token#199 ASC NULLS FIRST], [token#199, count#200L]
+
+(21) AdaptiveSparkPlan
+Output [2]: [token#199, count#200L]
+Arguments: isFinalPlan=true
+
+
