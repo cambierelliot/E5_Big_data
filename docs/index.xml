@@ -10,55 +10,61 @@
     <link>https://quartz.jzhao.xyz/quartz-min/content/lab3/assignment/BDA_Assignment03</link>
     <guid>https://quartz.jzhao.xyz/quartz-min/content/lab3/assignment/BDA_Assignment03</guid>
     <description><![CDATA[  📄 Voir le fichier source sur GitHub . ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:44 GMT</pubDate>
+    <pubDate>Wed, 19 Nov 2025 19:01:30 GMT</pubDate>
+  </item><item>
+    <title>📓 BDA_Assignment02</title>
+    <link>https://quartz.jzhao.xyz/quartz-min/content/lab2/assignments/BDA_Assignment02</link>
+    <guid>https://quartz.jzhao.xyz/quartz-min/content/lab2/assignments/BDA_Assignment02</guid>
+    <description><![CDATA[  📄 Voir le fichier source sur GitHub . ]]></description>
+    <pubDate>Wed, 19 Nov 2025 19:01:30 GMT</pubDate>
   </item><item>
     <title>📓 BDA_Assignment01</title>
     <link>https://quartz.jzhao.xyz/quartz-min/content/lab1/assignment/BDA_Assignment01</link>
     <guid>https://quartz.jzhao.xyz/quartz-min/content/lab1/assignment/BDA_Assignment01</guid>
     <description><![CDATA[  📄 Voir le fichier source sur GitHub . ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:44 GMT</pubDate>
+    <pubDate>Wed, 19 Nov 2025 19:01:30 GMT</pubDate>
   </item><item>
     <title>rapport3</title>
     <link>https://quartz.jzhao.xyz/lab3/assignment/rapport3</link>
     <guid>https://quartz.jzhao.xyz/lab3/assignment/rapport3</guid>
     <description><![CDATA[ Rapport - Assignment 03: Analyzing Graphs + Data Mining/ML Auteur : Owen BRAUX et Elliot CAMBIER Cours : Big Data Analytics (ESIEE 2025-2026) Introduction Ce document présente le travail réalisé pour l’Assignment 03. ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:44 GMT</pubDate>
+    <pubDate>Wed, 19 Nov 2025 19:01:30 GMT</pubDate>
   </item><item>
     <title>metrics</title>
     <link>https://quartz.jzhao.xyz/lab3/assignment/outputs/metrics</link>
     <guid>https://quartz.jzhao.xyz/lab3/assignment/outputs/metrics</guid>
     <description><![CDATA[ Big Data Analytics - Assignment 03 Metrics Author: Badr TAJINI Date: 2025-11-18 11:41:00 1. ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:44 GMT</pubDate>
+    <pubDate>Wed, 19 Nov 2025 19:01:30 GMT</pubDate>
+  </item><item>
+    <title>rapport2</title>
+    <link>https://quartz.jzhao.xyz/lab2/assignments/rapport2</link>
+    <guid>https://quartz.jzhao.xyz/lab2/assignments/rapport2</guid>
+    <description><![CDATA[ Rapport - Assignement 02: Text Analytics avec PySpark Auteur : Owen BRAUX et Elliot CAMBIER Cours : Big Data Analytics (ESIEE 2025-2026) Introduction Ce document présente le travail qu’on a réalisé pour l’Assignement 02. ]]></description>
+    <pubDate>Wed, 19 Nov 2025 19:01:30 GMT</pubDate>
+  </item><item>
+    <title>queries_and_results</title>
+    <link>https://quartz.jzhao.xyz/lab2/assignments/outputs/queries_and_results</link>
+    <guid>https://quartz.jzhao.xyz/lab2/assignments/outputs/queries_and_results</guid>
+    <description><![CDATA[ Résultats de la Recherche Booléenne Requête: romeo juliet AND (20 documents) DocIDScore (Sum TF)96315977459778496383976739429294312951529518295262 OR (158 documents) DocIDScore (Sum TF)96315977456943495214961549622496254963249778494303 Requête: king queen AND (298 documents) DocIDScore (Sum TF)93381... ]]></description>
+    <pubDate>Wed, 19 Nov 2025 19:01:29 GMT</pubDate>
   </item><item>
     <title>rapport</title>
     <link>https://quartz.jzhao.xyz/lab1/assignment/rapport</link>
     <guid>https://quartz.jzhao.xyz/lab1/assignment/rapport</guid>
     <description><![CDATA[ Rapport - Assignement 01: Text Analytics avec PySpark Auteur : Badr TAJINI Cours : Big Data Analytics (ESIEE 2025-2026) Introduction Ce document présente le travail qu’on a réalisé pour l’Assignement 01. ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:44 GMT</pubDate>
+    <pubDate>Wed, 19 Nov 2025 19:01:29 GMT</pubDate>
   </item><item>
     <title>ENV</title>
     <link>https://quartz.jzhao.xyz/lab1/assignment/ENV</link>
     <guid>https://quartz.jzhao.xyz/lab1/assignment/ENV</guid>
     <description><![CDATA[ Environment Summary Python: 3.10.19 Spark: 4.0.1 PySpark: 4.0.1 Java: openjdk version “21.0.6” 2025-01-21 OS: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39 Spark Configuration spark.app.id = local-1761233231783 spark.app.name = BDA-A01 spark.app.startTime = 1761233229800 spark.app.sub... ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:44 GMT</pubDate>
+    <pubDate>Wed, 19 Nov 2025 19:01:29 GMT</pubDate>
   </item><item>
     <title>📓 BDA_Assignment03</title>
     <link>https://quartz.jzhao.xyz/lab3/assignment/BDA_Assignment03</link>
     <guid>https://quartz.jzhao.xyz/lab3/assignment/BDA_Assignment03</guid>
     <description><![CDATA[  📄 Voir le fichier source sur GitHub . ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:30 GMT</pubDate>
-  </item><item>
-    <title>📓 BDA_Assignment01</title>
-    <link>https://quartz.jzhao.xyz/lab1/assignment/BDA_Assignment01</link>
-    <guid>https://quartz.jzhao.xyz/lab1/assignment/BDA_Assignment01</guid>
-    <description><![CDATA[  📄 Voir le fichier source sur GitHub . ]]></description>
-    <pubDate>Wed, 19 Nov 2025 18:18:27 GMT</pubDate>
-  </item><item>
-    <title>Portfolio Big Data</title>
-    <link>https://quartz.jzhao.xyz/</link>
-    <guid>https://quartz.jzhao.xyz/</guid>
-    <description><![CDATA[ 📊 Big Data Analytics - Portfolio Bienvenue. Ce site présente uniquement les Assignments (rendus notés). ]]></description>
-    <pubDate>Wed, 23 Aug 2023 19:09:04 GMT</pubDate>
+    <pubDate>Wed, 19 Nov 2025 19:01:15 GMT</pubDate>
   </item>
     </channel>
   </rss>
