@@ -6,10 +6,58 @@
       <description>Last 10 notes on Quartz 4</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>Rapport BDA - BDA_Assignment03</title>
+    <title>readme</title>
+    <link>https://quartz.jzhao.xyz/readme</link>
+    <guid>https://quartz.jzhao.xyz/readme</guid>
+    <description><![CDATA[ Big Data by BRAUX Owen and CAMBIER Elliot conda create -n bda-env python=3.10 -y conda activate bda-env conda install -c conda-forge openjdk=21 maven -y pip install —upgrade pip jupyterlab kaggle pyspark Pour Kaggle : Connectez-vous à votre compte sur kaggle.com. ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:09:44 GMT</pubDate>
+  </item><item>
+    <title>ENV</title>
+    <link>https://quartz.jzhao.xyz/ENV</link>
+    <guid>https://quartz.jzhao.xyz/ENV</guid>
+    <description><![CDATA[ BDA Final Project - Environment Summary This file documents the environment used to run the project pipeline. ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:09:44 GMT</pubDate>
+  </item><item>
+    <title>BDA_Assignment03</title>
+    <link>https://quartz.jzhao.xyz/lab3/assignment/BDA_Assignment03</link>
+    <guid>https://quartz.jzhao.xyz/lab3/assignment/BDA_Assignment03</guid>
+    <description><![CDATA[  📄 Voir le code source sur GitHub . ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:09:44 GMT</pubDate>
+  </item><item>
+    <title>BDA_PracticeLab02</title>
+    <link>https://quartz.jzhao.xyz/lab2/practice/BDA_PracticeLab02</link>
+    <guid>https://quartz.jzhao.xyz/lab2/practice/BDA_PracticeLab02</guid>
+    <description><![CDATA[  📄 Voir le code source sur GitHub . ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:09:33 GMT</pubDate>
+  </item><item>
+    <title>BDA_Assignment02</title>
+    <link>https://quartz.jzhao.xyz/lab2/assignments/BDA_Assignment02</link>
+    <guid>https://quartz.jzhao.xyz/lab2/assignments/BDA_Assignment02</guid>
+    <description><![CDATA[  📄 Voir le code source sur GitHub . ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:09:24 GMT</pubDate>
+  </item><item>
+    <title>lab1_practice</title>
+    <link>https://quartz.jzhao.xyz/lab1/practice/lab1_practice</link>
+    <guid>https://quartz.jzhao.xyz/lab1/practice/lab1_practice</guid>
+    <description><![CDATA[  📄 Voir le code source sur GitHub . ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:09:14 GMT</pubDate>
+  </item><item>
+    <title>BDA_Assignment01</title>
+    <link>https://quartz.jzhao.xyz/lab1/assignment/BDA_Assignment01</link>
+    <guid>https://quartz.jzhao.xyz/lab1/assignment/BDA_Assignment01</guid>
+    <description><![CDATA[  📄 Voir le code source sur GitHub . ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:09:04 GMT</pubDate>
+  </item><item>
+    <title>lab0</title>
+    <link>https://quartz.jzhao.xyz/lab0/lab0</link>
+    <guid>https://quartz.jzhao.xyz/lab0/lab0</guid>
+    <description><![CDATA[  📄 Voir le code source sur GitHub . ]]></description>
+    <pubDate>Wed, 19 Nov 2025 18:08:55 GMT</pubDate>
+  </item><item>
+    <title>Dashboard Big Data Analytics</title>
     <link>https://quartz.jzhao.xyz/</link>
     <guid>https://quartz.jzhao.xyz/</guid>
-    <description><![CDATA[  Liens utiles : 📂 Preuves (proof) | 📂 Outputs . ]]></description>
+    <description><![CDATA[ Bienvenue sur le rapport de projet Ce site regroupe l’ensemble des travaux pratiques et analyses réalisés pour le cours Big Data Analytics. ]]></description>
     <pubDate>Wed, 23 Aug 2023 19:09:04 GMT</pubDate>
   </item>
     </channel>

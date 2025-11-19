@@ -1,0 +1,599 @@
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=a84091bd"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Big-Data-Analytics-%E2%80%94-Assignment-01">Big Data Analytics — Assignment 01<a class="anchor-link" href="#Big-Data-Analytics-%E2%80%94-Assignment-01">¶</a></h1><blockquote>
+<p>Author : Badr TAJINI - Big Data Analytics - ESIEE 2025-2026</p>
+</blockquote>
+<p><strong>Chapter 1 :</strong> Introduction to Big Data<br/>
+<strong>Chapter 2 :</strong> MapReduce Algorithm Design</p>
+<p><strong>Tools :</strong> Spark or PySpark.<br/>
+<strong>Advice:</strong> Keep evidence and reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=0dc26082"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="0.-Bootstrap">0. Bootstrap<a class="anchor-link" href="#0.-Bootstrap">¶</a></h2><p>Use Profile A from the <code>BDA_Installation_Guide.md</code>. Log versions and key Spark configs.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=89aafbec">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># write some code here</span>
+<span class="c1"># - create SparkSession('BDA-A01') with UTC timezone</span>
+<span class="c1"># - print Spark/PySpark/Python versions</span>
+<span class="c1"># - set spark.sql.shuffle.partitions small for local runs</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparkSession</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyspark</span>
+
+<span class="c1"># Configuration de la Session Spark</span>
+<span class="n">spark</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">SparkSession</span><span class="o">.</span><span class="n">builder</span>
+    <span class="o">.</span><span class="n">appName</span><span class="p">(</span><span class="s2">"BDA-A01"</span><span class="p">)</span>  <span class="c1"># Nom de l'application</span>
+    <span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">"spark.sql.session.timeZone"</span><span class="p">,</span> <span class="s2">"UTC"</span><span class="p">)</span>
+    <span class="c1"># Configuration recommandée pour les tests locaux (réduit les partitions de Shuffle)</span>
+    <span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">"spark.sql.shuffle.partitions"</span><span class="p">,</span> <span class="s2">"8"</span><span class="p">)</span> 
+    <span class="o">.</span><span class="n">getOrCreate</span><span class="p">()</span>
+<span class="p">)</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span>
+
+<span class="c1"># Affichage des versions</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Spark Session créée | Port UI: </span><span class="si">{</span><span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span><span class="o">.</span><span class="n">uiWebUrl</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Spark version: </span><span class="si">{</span><span class="n">spark</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"PySpark version: </span><span class="si">{</span><span class="n">pyspark</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Python version: </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> | OS: </span><span class="si">{</span><span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+25/11/14 09:33:24 WARN Utils: Your hostname, Elliot, resolves to a loopback address: 127.0.1.1; using 10.255.255.254 instead (on interface lo)
+25/11/14 09:33:24 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+25/11/14 09:33:26 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Spark Session créée | Port UI: http://10.255.255.254:4040
+Spark version: 4.0.1
+PySpark version: 4.0.1
+Python version: 3.10.19 | OS: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=42ed8f8f-c104-47d7-90ab-de3652447b09">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span><span class="o">.</span><span class="n">uiWebUrl</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>http://10.255.255.254:4040
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=f8d8614f"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="1.-Load-dataset">1. Load dataset<a class="anchor-link" href="#1.-Load-dataset">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=0bf4292f">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">## 1. Load data (Local File)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">BASE_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+<span class="n">DATA_DIR</span> <span class="o">=</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"data"</span>
+<span class="n">OUTPUTS_DIR</span> <span class="o">=</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"outputs"</span>
+<span class="n">PROOF_DIR</span> <span class="o">=</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"proof"</span>
+
+<span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="p">(</span><span class="n">DATA_DIR</span><span class="p">,</span> <span class="n">OUTPUTS_DIR</span><span class="p">,</span> <span class="n">PROOF_DIR</span><span class="p">):</span>
+    <span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="n">FILE_NAME</span> <span class="o">=</span> <span class="s2">"shakespeare.txt"</span> 
+<span class="n">TEXT_PATH</span> <span class="o">=</span> <span class="n">DATA_DIR</span> <span class="o">/</span> <span class="n">FILE_NAME</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">TEXT_PATH</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Erreur: Le fichier </span><span class="si">{</span><span class="n">TEXT_PATH</span><span class="si">}</span><span class="s2"> est introuvable. Veuillez le placer manuellement dans le dossier data/."</span><span class="p">)</span>
+    
+<span class="n">raw_rdd</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">TEXT_PATH</span><span class="p">))</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
+
+<span class="n">lines_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">TEXT_PATH</span><span class="p">))</span><span class="o">.</span><span class="n">withColumnRenamed</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="s2">"line"</span><span class="p">)</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
+
+<span class="n">raw_rdd</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">lines_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data loaded successfully from: </span><span class="si">{</span><span class="n">TEXT_PATH</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">lines_df</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">truncate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>                                                                                </pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Data loaded successfully from: /mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big data/bigdata/lab1/assignment/data/shakespeare.txt
++----------------------+
+|line                  |
++----------------------+
+|1609                  |
+|                      |
+|THE SONNETS           |
+|                      |
+|by William Shakespeare|
++----------------------+
+only showing top 5 rows
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=98ad4247"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2.-Part-A-%E2%80%94-%E2%80%9Cperfect-x%E2%80%9D-follower-counts">2. Part A — “perfect x” follower counts<a class="anchor-link" href="#2.-Part-A-%E2%80%94-%E2%80%9Cperfect-x%E2%80%9D-follower-counts">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=d7b8943b">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># write some code here</span>
+<span class="c1"># - tokenize lowercase, split on non-letters</span>
+<span class="c1"># - for each line, if tokens[i]=='perfect' take tokens[i+1]</span>
+<span class="c1"># - discard followers with count=1</span>
+<span class="c1"># - write outputs/perfect_followers.csv</span>
+<span class="c1"># - save explain('formatted') to proof/plan_perfect.txt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyspark.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">functions</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="kn">import</span> <span class="n">add</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">redirect_stdout</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">token_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[a-z]+"</span><span class="p">)</span>
+
+<span class="c1"># RDD: (ligne) -&gt; liste de mots suiveurs de 'perfect'</span>
+<span class="n">followers_rdd</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">raw_rdd</span>
+    <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">line</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># 1. Tokenisation et mise en minuscule</span>
+        <span class="n">token_pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="p">])</span>
+    <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tokens</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># 2. Extraction du follower 'x' si le mot précédent est 'perfect'</span>
+        <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'perfect'</span> <span class="ow">and</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> 
+    <span class="p">])</span>
+    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">follower</span><span class="p">:</span> <span class="p">(</span><span class="n">follower</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="n">add</span><span class="p">)</span> <span class="c1"># Compte les occurrences</span>
+<span class="p">)</span>
+
+<span class="c1"># Conversion en DataFrame pour le filtre final et la sauvegarde standard</span>
+<span class="n">perfect_counts_df</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">followers_rdd</span>
+    <span class="o">.</span><span class="n">toDF</span><span class="p">([</span><span class="s2">"follower"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">"count"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 3. Filtre : count &gt; 1 (exigence de l'énoncé)</span>
+    <span class="o">.</span><span class="n">orderBy</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s2">"count"</span><span class="p">),</span> <span class="n">F</span><span class="o">.</span><span class="n">asc</span><span class="p">(</span><span class="s2">"follower"</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="c1">#perfect_counts_df.show(10, truncate=False)</span>
+
+<span class="c1"># 4. Sauvegarde du résultat (outputs/perfect_followers.csv)</span>
+<span class="n">perfect_counts_df</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span> <span class="o">/</span> <span class="s2">"perfect_followers.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Résultats sauvegardés dans </span><span class="si">{</span><span class="n">OUTPUTS_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">'perfect_followers.csv'</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># 5. Sauvegarde du plan d'exécution (proof/plan_perfect.txt)</span>
+<span class="n">plan_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">plan_buffer</span><span class="p">):</span>
+    <span class="n">perfect_counts_df</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="s2">"formatted"</span><span class="p">)</span> 
+
+<span class="p">(</span><span class="n">PROOF_DIR</span> <span class="o">/</span> <span class="s2">"plan_perfect.txt"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">plan_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Plan sauvegardé dans </span><span class="si">{</span><span class="n">PROOF_DIR</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="s1">'plan_perfect.txt'</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Résultats sauvegardés dans /mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big data/bigdata/lab1/assignment/outputs/perfect_followers.csv
+Plan sauvegardé dans /mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big data/bigdata/lab1/assignment/proof/plan_perfect.txt
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=8246cd05"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3.-Part-B-%E2%80%94-PMI-with-RDDs:-pairs">3. Part B — PMI with RDDs: pairs<a class="anchor-link" href="#3.-Part-B-%E2%80%94-PMI-with-RDDs:-pairs">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=0d47825f">
+<div class="input">
+<div class="prompt input_prompt">In [5]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># write some code here</span>
+<span class="c1"># - parse --threshold K</span>
+<span class="c1"># - keep first 40 tokens per line</span>
+<span class="c1"># - compute counts for x and (x,y); then PMI=log10(P(x,y)/(P(x)P(x)))</span>
+<span class="c1"># - filter by threshold; write outputs/pmi_pairs_sample.csv</span>
+<span class="c1"># - save plan text to proof/plan_pmi_pairs.txt if DF used</span>
+<span class="c1">## 5. PMI — pairs (RDD)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">combinations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">redirect_stdout</span>
+
+<span class="n">MAX_TOKENS</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">PMI_THRESHOLD</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">dedupe_preserve</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">ordered</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="n">ordered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ordered</span>
+
+<span class="n">pmi_token_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[a-z]+"</span><span class="p">)</span>
+
+<span class="n">tokens_per_line</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">lines_df</span><span class="o">.</span><span class="n">rdd</span>
+    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">pmi_token_pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">())][:</span><span class="n">MAX_TOKENS</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tokens</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">t</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">dedupe_preserve</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tokens</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">cache</span><span class="p">())</span>
+
+<span class="n">num_docs</span> <span class="o">=</span> <span class="n">tokens_per_line</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="kn">import</span> <span class="n">add</span>
+
+<span class="n">marginal_counts</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">tokens_per_line</span>
+    <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tokens</span><span class="p">:</span> <span class="p">((</span><span class="n">token</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="n">add</span><span class="p">))</span>
+
+<span class="n">marginal_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">marginal_counts</span><span class="o">.</span><span class="n">collect</span><span class="p">())</span>
+<span class="n">marginal_bc</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">marginal_dict</span><span class="p">)</span>
+
+<span class="n">pair_counts</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">tokens_per_line</span>
+    <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tokens</span><span class="p">:</span> <span class="p">[((</span><span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+    <span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="n">add</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">kv</span><span class="p">:</span> <span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">PMI_THRESHOLD</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_pair_pmi</span><span class="p">(</span><span class="n">kv</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">co_count</span> <span class="o">=</span> <span class="n">kv</span>
+    <span class="n">count_x</span> <span class="o">=</span> <span class="n">marginal_bc</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">count_y</span> <span class="o">=</span> <span class="n">marginal_bc</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">count_x</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">count_y</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">pmi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">((</span><span class="n">co_count</span> <span class="o">*</span> <span class="n">num_docs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">count_x</span> <span class="o">*</span> <span class="n">count_y</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">pmi</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">co_count</span><span class="p">))</span>
+
+<span class="n">pmi_pairs_rdd</span> <span class="o">=</span> <span class="n">pair_counts</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">compute_pair_pmi</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="n">pairs_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">pmi_pairs_rdd</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="p">[</span><span class="s2">"x"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">,</span> <span class="s2">"pmi"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">])</span><span class="o">.</span><span class="n">orderBy</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s2">"pmi"</span><span class="p">))</span>
+
+<span class="c1">#pairs_df.show(10, truncate=False)</span>
+
+<span class="n">pairs_df</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span> <span class="o">/</span> <span class="s2">"pmi_pairs_sample.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">plan_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">plan_buffer</span><span class="p">):</span>
+    <span class="n">pairs_df</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="s2">"formatted"</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">PROOF_DIR</span> <span class="o">/</span> <span class="s2">"plan_pmi_pairs.txt"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">plan_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>                                                                                </pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt output_prompt">Out[5]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>1466</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=13dcd21f"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="4.-Part-B-%E2%80%94-PMI-with-RDDs:-stripes">4. Part B — PMI with RDDs: stripes<a class="anchor-link" href="#4.-Part-B-%E2%80%94-PMI-with-RDDs:-stripes">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=b0245662">
+<div class="input">
+<div class="prompt input_prompt">In [6]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># write some code here</span>
+<span class="c1"># - build stripes x -&gt; map[y -&gt; count] with combiners</span>
+<span class="c1"># - reuse univariate counts; compute PMI with log10</span>
+<span class="c1"># - threshold K; write outputs/pmi_stripes_sample.csv</span>
+<span class="c1"># - plan to proof/plan_pmi_stripes.txt if DF used</span>
+<span class="c1">## 6. PMI — stripes (RDD)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">redirect_stdout</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">stripe_builder</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="o">!=</span> <span class="n">x</span><span class="p">:</span>
+                <span class="n">counter</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">counter</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">counter</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">merge_counters</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
+    <span class="n">c1</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">c2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c1</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">stripe_to_rows</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">item</span>
+    <span class="n">count_x</span> <span class="o">=</span> <span class="n">marginal_bc</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">count_x</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">co_count</span> <span class="ow">in</span> <span class="n">counter</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">co_count</span> <span class="o">&gt;=</span> <span class="n">PMI_THRESHOLD</span><span class="p">:</span>
+            <span class="n">count_y</span> <span class="o">=</span> <span class="n">marginal_bc</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">count_y</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">pmi</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">((</span><span class="n">co_count</span> <span class="o">*</span> <span class="n">num_docs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">count_x</span> <span class="o">*</span> <span class="n">count_y</span><span class="p">))</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">pmi</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">co_count</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">rows</span>
+
+<span class="n">stripes_counts</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">tokens_per_line</span>
+    <span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="n">stripe_builder</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">reduceByKey</span><span class="p">(</span><span class="n">merge_counters</span><span class="p">))</span>
+
+<span class="n">pmi_stripes_rdd</span> <span class="o">=</span> <span class="n">stripes_counts</span><span class="o">.</span><span class="n">flatMap</span><span class="p">(</span><span class="n">stripe_to_rows</span><span class="p">)</span>
+
+<span class="n">stripes_df</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">pmi_stripes_rdd</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="p">[</span><span class="s2">"x"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">,</span> <span class="s2">"pmi"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">])</span><span class="o">.</span><span class="n">orderBy</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s2">"pmi"</span><span class="p">))</span>
+
+<span class="n">stripes_df</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">truncate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">stripes_df</span><span class="o">.</span><span class="n">toPandas</span><span class="p">()</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">OUTPUTS_DIR</span> <span class="o">/</span> <span class="s2">"pmi_stripes_sample.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">plan_buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">plan_buffer</span><span class="p">):</span>
+    <span class="n">stripes_df</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="s2">"formatted"</span><span class="p">)</span>
+
+<span class="p">(</span><span class="n">PROOF_DIR</span> <span class="o">/</span> <span class="s2">"plan_pmi_stripes.txt"</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">plan_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>                                                                                </pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>+--------+--------+------------------+-----+
+|x       |y       |pmi               |count|
++--------+--------+------------------+-----+
+|pell    |mell    |4.267109122884396 |5    |
+|mell    |pell    |4.267109122884396 |5    |
+|sauf    |votre   |4.091017863828714 |5    |
+|votre   |sauf    |4.091017863828714 |5    |
+|margery |jourdain|4.011836617781089 |5    |
+|jourdain|margery |4.011836617781089 |5    |
+|med     |cine    |4.003867688109814 |7    |
+|cine    |med     |4.003867688109814 |7    |
+|timandra|phrynia |3.9660791272204143|5    |
+|phrynia |timandra|3.9660791272204143|5    |
++--------+--------+------------------+-----+
+only showing top 10 rows
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>                                                                                </pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt output_prompt">Out[6]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>1466</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=9cec5806"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="5.-Spark-UI-evidence">5. Spark UI evidence<a class="anchor-link" href="#5.-Spark-UI-evidence">¶</a></h2><p>Open <a href="http://localhost:4040">http://localhost:4040</a> during runs and capture Files Read, Input Size, Shuffle Read/Write.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=d2c2ef5a"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="6.-Environment-and-reproducibility">6. Environment and reproducibility<a class="anchor-link" href="#6.-Environment-and-reproducibility">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=0f01663d">
+<div class="input">
+<div class="prompt input_prompt">In [10]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># write some code here</span>
+<span class="c1"># - print Java version, Spark conf, OS info</span>
+<span class="c1"># - save ENV.md: versions + key configs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_java_version</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s2">"java"</span><span class="p">,</span> <span class="s2">"-version"</span><span class="p">],</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Unavailable (</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">)"</span>
+
+<span class="n">java_output</span> <span class="o">=</span> <span class="n">get_java_version</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Java: </span><span class="si">{</span><span class="n">java_output</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Spark configuration (selected):"</span><span class="p">)</span>
+<span class="n">conf_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">spark</span><span class="o">.</span><span class="n">sparkContext</span><span class="o">.</span><span class="n">getConf</span><span class="p">()</span><span class="o">.</span><span class="n">getAll</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">conf_items</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">" - </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">env_summary</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"python"</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+    <span class="s2">"spark"</span><span class="p">:</span> <span class="n">spark</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+    <span class="s2">"pyspark"</span><span class="p">:</span> <span class="n">pyspark</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
+    <span class="s2">"java"</span><span class="p">:</span> <span class="n">java_output</span><span class="p">,</span>
+    <span class="s2">"os"</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">(),</span>
+    <span class="s2">"spark_conf"</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">conf_items</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"spark."</span><span class="p">)}}</span>
+
+<span class="n">env_lines</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"# Environment Summary"</span><span class="p">,</span>
+    <span class="s2">""</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">"- Python: </span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">"- Spark: </span><span class="si">{</span><span class="n">spark</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">"- PySpark: </span><span class="si">{</span><span class="n">pyspark</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">"- Java: </span><span class="si">{</span><span class="n">java_output</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="sa">f</span><span class="s2">"- OS: </span><span class="si">{</span><span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="s2">""</span><span class="p">,</span>
+    <span class="s2">"## Spark Configuration"</span><span class="p">]</span>
+
+<span class="n">env_lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_summary</span><span class="p">[</span><span class="s2">"spark_conf"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+<span class="n">ENV_PATH</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"ENV.md"</span><span class="p">)</span>
+<span class="n">ENV_PATH</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">env_lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Environment details saved to </span><span class="si">{</span><span class="n">ENV_PATH</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Java: openjdk version "21.0.6" 2025-01-21
+Spark configuration (selected):
+ - spark.app.id = local-1761233231783
+ - spark.app.name = BDA-A01
+ - spark.app.startTime = 1761233229800
+ - spark.app.submitTime = 1761233228747
+ - spark.driver.extraJavaOptions = -Djava.net.preferIPv6Addresses=false -XX:+IgnoreUnrecognizedVMOptions --add-modules=jdk.incubator.vector --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED -Djdk.reflect.useDirectMethodHandle=false -Dio.netty.tryReflectionSetAccessible=true
+ - spark.driver.host = 10.255.255.254
+ - spark.driver.port = 40745
+ - spark.executor.extraJavaOptions = -Djava.net.preferIPv6Addresses=false -XX:+IgnoreUnrecognizedVMOptions --add-modules=jdk.incubator.vector --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED -Djdk.reflect.useDirectMethodHandle=false -Dio.netty.tryReflectionSetAccessible=true
+ - spark.executor.id = driver
+ - spark.hadoop.fs.s3a.vectored.read.max.merged.size = 2M
+ - spark.hadoop.fs.s3a.vectored.read.min.seek.size = 128K
+ - spark.master = local[*]
+ - spark.rdd.compress = True
+ - spark.serializer.objectStreamReset = 100
+ - spark.sql.artifact.isolation.enabled = false
+ - spark.sql.session.timeZone = UTC
+ - spark.sql.shuffle.partitions = 8
+ - spark.sql.warehouse.dir = file:/mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big%20data/bigdata/lab1/assignment/spark-warehouse
+ - spark.submit.deployMode = client
+ - spark.submit.pyFiles = 
+ - spark.ui.showConsoleProgress = true
+Environment details saved to /mnt/c/Users/ellio/OneDrive/Documents/Postbac/E5-DSIA/elliot/big data/bigdata/lab1/assignment/ENV.md
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=9f4ec6b9-3826-4644-8b56-e92b8071d8c6">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
