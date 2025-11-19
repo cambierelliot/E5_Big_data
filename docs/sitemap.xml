@@ -1,28 +1,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url>
-    <loc>https://quartz.jzhao.xyz/ENV</loc>
-    <lastmod>2025-11-19T18:09:44.391Z</lastmod>
-  </url><url>
     <loc>https://quartz.jzhao.xyz/</loc>
     <lastmod>2023-08-23T19:09:04.000Z</lastmod>
   </url><url>
-    <loc>https://quartz.jzhao.xyz/lab0/lab0</loc>
-    <lastmod>2025-11-19T18:08:55.339Z</lastmod>
-  </url><url>
     <loc>https://quartz.jzhao.xyz/lab1/assignment/BDA_Assignment01</loc>
-    <lastmod>2025-11-19T18:09:04.465Z</lastmod>
+    <lastmod>2025-11-19T18:18:27.455Z</lastmod>
   </url><url>
-    <loc>https://quartz.jzhao.xyz/lab1/practice/lab1_practice</loc>
-    <lastmod>2025-11-19T18:09:14.152Z</lastmod>
+    <loc>https://quartz.jzhao.xyz/lab1/assignment/ENV</loc>
+    <lastmod>2025-11-19T18:18:44.303Z</lastmod>
   </url><url>
-    <loc>https://quartz.jzhao.xyz/lab2/assignments/BDA_Assignment02</loc>
-    <lastmod>2025-11-19T18:09:24.165Z</lastmod>
-  </url><url>
-    <loc>https://quartz.jzhao.xyz/lab2/practice/BDA_PracticeLab02</loc>
-    <lastmod>2025-11-19T18:09:33.654Z</lastmod>
+    <loc>https://quartz.jzhao.xyz/lab1/assignment/rapport</loc>
+    <lastmod>2025-11-19T18:18:44.382Z</lastmod>
   </url><url>
     <loc>https://quartz.jzhao.xyz/lab3/assignment/BDA_Assignment03</loc>
-    <lastmod>2025-11-19T18:09:44.227Z</lastmod>
+    <lastmod>2025-11-19T18:18:30.799Z</lastmod>
   </url><url>
-    <loc>https://quartz.jzhao.xyz/readme</loc>
-    <lastmod>2025-11-19T18:09:44.433Z</lastmod>
+    <loc>https://quartz.jzhao.xyz/lab3/assignment/outputs/metrics</loc>
+    <lastmod>2025-11-19T18:18:44.507Z</lastmod>
+  </url><url>
+    <loc>https://quartz.jzhao.xyz/lab3/assignment/rapport3</loc>
+    <lastmod>2025-11-19T18:18:44.570Z</lastmod>
+  </url><url>
+    <loc>https://quartz.jzhao.xyz/quartz-min/content/lab1/assignment/BDA_Assignment01</loc>
+    <lastmod>2025-11-19T18:18:44.620Z</lastmod>
+  </url><url>
+    <loc>https://quartz.jzhao.xyz/quartz-min/content/lab3/assignment/BDA_Assignment03</loc>
+    <lastmod>2025-11-19T18:18:44.668Z</lastmod>
   </url></urlset>

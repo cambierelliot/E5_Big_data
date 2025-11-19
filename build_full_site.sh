@@ -1,101 +1,105 @@
 #!/bin/bash
-# Script pour générer un Site Web Complet (Dashboard) avec tous les Labs
+# Script de génération sélective (Seulement Assignment, pas Practice)
 
 QUARTZ_DIR="quartz-min"
 REPO_URL="https://github.com/cambierelliot/E5_Big_data"
 
-echo "=== 🚀 Démarrage de la génération du Dashboard Complet ==="
+echo "=== 🚀 Génération du Site (Mode Filtré) ==="
 
-# 1. Installation propre de Quartz
-# On supprime l'ancien pour éviter les conflits
+# 1. Installation propre
 rm -rf "$QUARTZ_DIR"
 echo ">>> 📦 Clonage de Quartz..."
-git clone https://github.com/jackyzha0/quartz.git "$QUARTZ_DIR"
-echo ">>> 📦 Installation des dépendances..."
-cd "$QUARTZ_DIR" && npm ci && cd ..
+git clone https://github.com/jackyzha0/quartz.git "$QUARTZ_DIR" > /dev/null 2>&1
+cd "$QUARTZ_DIR" && npm ci > /dev/null 2>&1 && cd ..
 
-# Dossiers de destination dans Quartz
+# Dossiers de destination
 CONTENT_DIR="$QUARTZ_DIR/content"
 STATIC_NB_DIR="$CONTENT_DIR/static/nb"
 mkdir -p "$STATIC_NB_DIR"
 
-# 2. La boucle magique : Trouver TOUS les notebooks et les ajouter
-echo ">>> 🔍 Recherche des notebooks dans les dossiers lab*..."
+# ---------------------------------------------------------
+# 2. TRAITEMENT DES NOTEBOOKS (.ipynb) -> HTML -> Iframe
+# ---------------------------------------------------------
+echo ">>> 📓 Traitement des Notebooks (Dossiers 'assignment' uniquement)..."
 
-# On cherche tous les fichiers .ipynb dans les dossiers commençant par 'lab'
-find . -type f -path "./lab*/*.ipynb" | while read notebook; do
-    # Ex: notebook = ./lab3/assignment/BDA_Assignment03.ipynb
-    
-    # Nom du fichier sans extension (ex: BDA_Assignment03)
+# On cherche uniquement dans les dossiers qui contiennent "assignment"
+find . -type f -path "*assignment/*.ipynb" -not -path "*/.*" | while read notebook; do
     filename=$(basename "$notebook" .ipynb)
+    parent_dir=$(dirname "$notebook")       # ex: ./lab3/assignment
+    clean_dir=${parent_dir#./}              # ex: lab3/assignment
     
-    # Chemin du dossier parent (ex: ./lab3/assignment)
-    parent_dir=$(dirname "$notebook")
+    echo "   ➡️  Notebook trouvé : $clean_dir/$filename"
     
-    # On nettoie le chemin pour l'arborescence du site (enlever le ./ au début)
-    clean_dir=${parent_dir#./}
+    # A. Conversion en HTML (pour l'iframe)
+    jupyter nbconvert --to html "$notebook" --output-dir "$STATIC_NB_DIR" --template basic --quiet
     
-    echo "   ➡️ Traitement de : $clean_dir/$filename"
-    
-    # A. Convertir le notebook en HTML
-    jupyter nbconvert --to html "$notebook" --output-dir "$STATIC_NB_DIR" --template basic
-    
-    # B. Créer le dossier correspondant dans le contenu du site
+    # B. Création du dossier dans le site
     mkdir -p "$CONTENT_DIR/$clean_dir"
     
-    # C. Créer la page Markdown qui affiche le notebook
+    # C. Calcul du chemin relatif pour remonter à la racine (ex: ../../)
+    rel_path=$(echo "$clean_dir" | sed 's|[^/]\+|..|g')
+    if [ -n "$rel_path" ]; then rel_path="$rel_path/"; fi
+    
+    # D. Création de la page Markdown Wrapper
     cat <<EOF > "$CONTENT_DIR/$clean_dir/$filename.md"
 ---
-title: $filename
+title: 📓 $filename
 ---
-> [📄 Voir le code source sur GitHub]($REPO_URL/blob/main/$clean_dir/$filename.ipynb)
+> [📄 Voir le fichier source sur GitHub]($REPO_URL/blob/main/$clean_dir/$filename.ipynb)
 
-<iframe src="/static/nb/$filename.html" width="100%" height="1200px" style="border:none;"></iframe>
+<iframe src="${rel_path}static/nb/$filename.html" width="100%" height="1200px" style="border:none;"></iframe>
 EOF
-
 done
 
-# 3. Ajouter les Rapports Markdown existants (ex: report.md)
-echo ">>> 📑 Ajout des fichiers Markdown (rapports)..."
-find . -maxdepth 2 -name "*.md" -not -name "README.md" -not -path "./quartz-min/*" | while read mdfile; do
-    cp "$mdfile" "$CONTENT_DIR/"
-    echo "   ➡️ Ajouté : $mdfile"
+# ---------------------------------------------------------
+# 3. TRAITEMENT DES RAPPORTS (.md)
+# ---------------------------------------------------------
+echo ">>> 📝 Traitement des Rapports Markdown..."
+
+# On cherche les .md dans "assignment" (excluant README et fichiers système)
+find . -type f -path "*assignment/*.md" -not -name "README.md" | while read mdfile; do
+    filename=$(basename "$mdfile" .md)
+    parent_dir=$(dirname "$mdfile")
+    clean_dir=${parent_dir#./}
+    
+    echo "   ➡️  Rapport trouvé : $clean_dir/$filename"
+    
+    mkdir -p "$CONTENT_DIR/$clean_dir"
+    
+    # On copie le fichier. Quartz va le traiter nativement.
+    cp "$mdfile" "$CONTENT_DIR/$clean_dir/"
 done
 
-# 4. Créer la page d'accueil (index.md)
-echo ">>> 🏠 Création de la page d'accueil..."
+# 4. Page d'accueil (Index)
 cat <<EOF > "$CONTENT_DIR/index.md"
 ---
-title: Dashboard Big Data Analytics
+title: Portfolio Big Data
 ---
+# 📊 Big Data Analytics - Portfolio
 
-# Bienvenue sur le rapport de projet
+Bienvenue. Ce site présente uniquement les **Assignments** (rendus notés).
 
-Ce site regroupe l'ensemble des travaux pratiques et analyses réalisés pour le cours Big Data Analytics.
+## 📂 Accès rapide
+Utilisez le menu de gauche pour naviguer.
 
-## 📂 Navigation
-Utilisez le menu de gauche (ou l'explorateur) pour naviguer dans les différents laboratoires :
-
-* **Lab 3** : PageRank & Spam Classification
-* **Rapports** : Analyses détaillées
+* **Notebooks** : Le code exécuté et les résultats.
+* **Rapports** : Les analyses textuelles et réponses aux questions.
 
 > **Auteur :** Elliot CAMBIER / Badr TAJINI
-> **Dépôt GitHub :** [Lien vers le repo]($REPO_URL)
 EOF
 
-# 5. Construction finale
-echo ">>> 🏗️ Construction du site..."
+# 5. Build & Deploy Prep
+echo ">>> 🏗️  Construction du site..."
 cd "$QUARTZ_DIR"
-npx quartz build
+npx quartz build > /dev/null 2>&1
 cd ..
 
-# 6. Préparation pour GitHub Pages
-echo ">>> 💾 Sauvegarde dans 'docs/'..."
+echo ">>> 💾 Mise à jour du dossier 'docs'..."
 rm -rf docs
 mv "$QUARTZ_DIR/public" docs
 touch docs/.nojekyll
 
-# Nettoyage final
+# Nettoyage (Optionnel, désactive-le si tu veux debugger)
 rm -rf "$QUARTZ_DIR"
 
-echo "✅ TERMINÉ ! Ton site complet est prêt dans le dossier 'docs/'."
+echo "✅ TERMINÉ ! Prêt à pousser sur GitHub."
